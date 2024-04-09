@@ -36,7 +36,10 @@ var Stats = function () {
 
 	var beginTime = ( performance || Date ).now(), prevTime = beginTime, frames = 0;
 
+	// fpsPanel 监测每秒的帧数
 	var fpsPanel = addPanel( new Stats.Panel( 'FPS', '#0ff', '#002' ) );
+
+	// msPanel 监测每一帧的时间
 	var msPanel = addPanel( new Stats.Panel( 'MS', '#0f0', '#020' ) );
 
 	if ( self.performance && self.performance.memory ) {
@@ -64,22 +67,32 @@ var Stats = function () {
 
 		end: function () {
 
+			// 增加帧计数
 			frames ++;
 
+			// 获取当前时间
 			var time = ( performance || Date ).now();
 
+			// 使用时间差和最大值200更新msPanel
 			msPanel.update( time - beginTime, 200 );
 
+			// 如果当前时间大于或等于上一次的时间加上一秒
 			if ( time >= prevTime + 1000 ) {
 
+				// 使用每秒帧数和最大值100更新fpsPanel
 				fpsPanel.update( ( frames * 1000 ) / ( time - prevTime ), 100 );
 
+				// 将上一次的时间设置为当前时间
 				prevTime = time;
+				// 重置帧计数
 				frames = 0;
 
+				// 如果memPanel存在
 				if ( memPanel ) {
 
+					// 获取内存性能
 					var memory = performance.memory;
+					// 使用已使用的JS堆大小和JS堆大小限制（都以MB为单位）更新memPanel
 					memPanel.update( memory.usedJSHeapSize / 1048576, memory.jsHeapSizeLimit / 1048576 );
 
 				}

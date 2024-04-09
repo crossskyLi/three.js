@@ -38,44 +38,85 @@
 
 		<script type="module">
 
+			/**
+			 * 本示例展示了如何使用three.js加载和播放动画。
+			 * 本示例使用了GLTFLoader加载器加载了一个glTF模型，使用了DRACOLoader解码器解码了glTF文件。
+			 * 本示例使用了AnimationMixer混合器播放了模型的动画。
+			 * 本示例使用了OrbitControls控制器控制了相机。
+			 * 本示例使用了PMREMGenerator生成了环境贴图。
+			 * 本示例使用了Stats性能监视器。
+			 * 本示例使用了Clock时钟对象。
+			 * 本示例使用了PerspectiveCamera透视相机。
+			 * 本示例使用了WebGLRenderer渲染器。
+			 * 本示例使用了Scene场景。
+			 * 本示例使用了RoomEnvironment环境。
+			 * 本示例使用了GLTFLoader加载器。
+			 * 本示例使用了DRACOLoader解码器。
+			 * 本示例使用了requestAnimationFrame动画函数。
+			 * 
+			 * 第一步，导入必要的模块。
+			 * 第二步，创建时钟对象和容器。
+			 * 第三步，创建性能监视器。
+			 * 第四步，创建渲染器。
+			 * 第五步，创建环境贴图生成器。
+			 * 第六步，创建场景。
+			 * 第七步，创建相机。
+			 * 第八步，创建控制器。
+			 * 第九步，创建Draco解码器和GLTF加载器。
+			 * 第十步，加载模型。
+			 * 第十一步，创建动画混合器。
+			 * 第十二步，开始动画。
+			 * 第十三步，处理窗口大小变化。
+			 * 第十四步，动画函数。
+			 */
+
+			// 导入必要的模块
 			import * as THREE from 'three';
-
 			import Stats from 'three/addons/libs/stats.module.js';
-
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 			import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-
 			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 			import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 			let mixer;
 
+			// 创建时钟对象和容器
 			const clock = new THREE.Clock();
 			const container = document.getElementById( 'container' );
 
+			// 创建性能监视器
 			const stats = new Stats();
 			container.appendChild( stats.dom );
 
+			// 创建渲染器
 			const renderer = new THREE.WebGLRenderer( { antialias: true } );
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			container.appendChild( renderer.domElement );
 
+			// 创建环境贴图生成器
 			const pmremGenerator = new THREE.PMREMGenerator( renderer );
 
+			// 创建场景
 			const scene = new THREE.Scene();
 			scene.background = new THREE.Color( 0xbfe3dd );
 			scene.environment = pmremGenerator.fromScene( new RoomEnvironment( renderer ), 0.04 ).texture;
 
+			// 创建相机
+			// 40 是视野角度，window.innerWidth / window.innerHeight 是宽高比，1 是近裁剪面，100 是远裁剪面
 			const camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 100 );
 			camera.position.set( 5, 2, 8 );
 
+			// 创建控制器
 			const controls = new OrbitControls( camera, renderer.domElement );
+			// 0 是目标位置，0.5 是目标高度，0 是目标深度
 			controls.target.set( 0, 0.5, 0 );
 			controls.update();
 			controls.enablePan = false;
 			controls.enableDamping = true;
 
+			// 创建Draco解码器和GLTF加载器
+			// Draco解码器是用来解码glTF文件的，glTF是一种用于3D模型的文件格式
 			const dracoLoader = new DRACOLoader();
 			dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
 
@@ -83,18 +124,23 @@
 			loader.setDRACOLoader( dracoLoader );
 			loader.load( 'models/gltf/LittlestTokyo.glb', function ( gltf ) {
 
+				// 加载模型
 				const model = gltf.scene;
+				// 1, 1, 0 是模型的位置，0.01, 0.01, 0.01 是模型的缩放
 				model.position.set( 1, 1, 0 );
 				model.scale.set( 0.01, 0.01, 0.01 );
 				scene.add( model );
 
+				// 创建动画混合器
 				mixer = new THREE.AnimationMixer( model );
 				mixer.clipAction( gltf.animations[ 0 ] ).play();
 
+				// 开始动画
 				animate();
 
 			}, undefined, function ( e ) {
 
+				// 错误处理
 				console.error( e );
 
 			} );
@@ -102,6 +148,7 @@
 
 			window.onresize = function () {
 
+				// 处理窗口大小变化
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
@@ -112,6 +159,7 @@
 
 			function animate() {
 
+				// 动画函数
 				requestAnimationFrame( animate );
 
 				const delta = clock.getDelta();

@@ -112,6 +112,8 @@ class RoomEnvironment extends Scene {
 
 	}
 
+
+	// dispose 函数
 	dispose() {
 
 		const resources = new Set();
